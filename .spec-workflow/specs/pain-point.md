@@ -16,7 +16,7 @@ Developers lose hours turning vague asks from PMs, clients, founders, or designe
 1. **Shareable intake** (`/request`) — three plain-English steps, no GitHub vocabulary; messy spelling and vague wording accepted.
 2. **Normalization** — rule-based cleanup (typos, minified goal, vagueness/terminology flags); optional LLM refine via OpenRouter.
 3. **AI-native spec** — `.spec-workflow/specs/requests/<id>.md` with **Cursor prompt (minified)** → **PRD (minified)** → **ADR** (scope + open questions) plus verbatim raw intake.
-4. **Developer Inbox** (`/inbox`) — list requests, copy minified prompt for Cursor, GitHub issue draft, status `new | in-cursor | done`.
+4. **Developer Inbox** (`/inbox`) — Open vs Resolved cards, numbered requests, optional screenshot preview, copy minified prompt for Cursor, GitHub issue draft, status `new | in-cursor | done`.
 
 ## What v1 does not do
 

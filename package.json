@@ -2,6 +2,7 @@
   "name": "plain-janes-task-ask",
   "version": "0.1.0",
   "description": "Plain English in. Builder-ready spec out.",
+  "license": "Apache-2.0",
   "type": "module",
   "engines": {
     "node": ">=20"

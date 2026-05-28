@@ -42,9 +42,12 @@ Follow [`DESIGN.md`](DESIGN.md) (Clay via `npx getdesign@latest add clay`) for c
 | `lib/normalize-request.js` | Rules (+ optional LLM when `useLlm`) → PRD, ADR, minified Cursor prompt |
 | `lib/openrouter-client.js` | OpenRouter chat API (`openrouter/free` default) |
 | `lib/spec-writer.js` | Assemble full markdown spec from normalized output |
-| `lib/requests-store.js` | Read/write request specs on disk |
+| `lib/requests-store.js` | Read/write request specs; `requestNumber`; attachments |
+| `lib/attachments.js` | Screenshot files + metadata |
+| `lib/parse-create-payload.js` | JSON/multipart create payload |
+| `lib/upload-middleware.js` | Multer (`screenshot` field) |
 | `public/request/` | Stakeholder intake UI |
-| `public/inbox/` | Developer Inbox UI |
+| `public/inbox/` | Developer Inbox (Open + Resolved cards) |
 | `.spec-workflow/specs/requests/` | Generated specs (committed when demoing) |
 | `scaffolds/cursor/` | ECC reinstall templates (not `.cursor/` itself) |
 | `docs/ECC-SETUP.md` | Local ECC install steps |
@@ -54,10 +57,11 @@ Follow [`DESIGN.md`](DESIGN.md) (Clay via `npx getdesign@latest add clay`) for c
 | Method | Path | Purpose |
 |--------|------|---------|
 | GET | `/api/config` | OpenRouter availability for UI toggle |
-| POST | `/api/requests` | Create request (`useLlm` optional) → write spec file |
-| GET | `/api/requests` | List all requests (metadata) |
-| GET | `/api/requests/:id` | Full spec body + parsed frontmatter |
-| PATCH | `/api/requests/:id` | Update `status` only |
+| POST | `/api/requests` | Create request (JSON or multipart + optional `screenshot`) |
+| GET | `/api/requests` | List metadata incl. `requestNumber`, `summary`, `status` |
+| GET | `/api/requests/:id` | Full spec + `cursorCopy` + `issueDraft` + `attachmentUrl` |
+| GET | `/api/requests/:id/attachment` | Screenshot image when present |
+| PATCH | `/api/requests/:id` | Update `status` only (`new` \| `in-cursor` \| `done`) |
 
 ## Spec file schema
 
@@ -68,6 +72,9 @@ id: <uuid>
 status: new | in-cursor | done
 requesterLabel: string (name + role, required)
 createdAt: ISO-8601
+normalized: rules | llm+rules | rules (llm-unavailable)
+llmModel: string  # when LLM polish ran
+attachment: path  # when screenshot saved
 ```
 
 Markdown headings (preserve when editing):
@@ -76,7 +83,14 @@ Markdown headings (preserve when editing):
 - `## PRD (minified)` — goal, user, frequency, success, constraints (table)
 - `## ADR` — Context, Decision, In scope, Out of scope, Open questions
 - `## Raw intake (verbatim)` — original stakeholder text (audit only)
+- `## Attachment (screenshot)` — when request included an image
 - `## GitHub issue draft`
+
+## Inbox UX
+
+- Sidebar: **Open** card (status `new` or `in-cursor`) and **Resolved** card (status `done`)
+- List items show stable `#1`, `#2`, … (oldest submit = `#1`)
+- Detail pane: status banner, spec preview, **Copy for Cursor**, status dropdown
 
 ## Builder workflow
 

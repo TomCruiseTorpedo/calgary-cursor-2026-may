@@ -13,7 +13,8 @@ Stakeholders type **messy human input** — spelling mistakes, vague phrasing, w
 - **Shareable request form** (`/request`) — plain English only; no GitHub account.
 - **Normalization pipeline** (`lib/normalize-request.js`) — typo cleanup, goal minification, vagueness and terminology flags; optional **Polish with AI** toggle on `/request` uses OpenRouter **`openrouter/free`** via `lib/openrouter-client.js`.
 - **Spec on disk** — `.spec-workflow/specs/requests/<id>.md` with stable PRD → ADR headings and verbatim raw intake preserved for audit.
-- **Developer Inbox** (`/inbox`) — list requests, preview spec, **Copy for Cursor** (minified prompt first), GitHub issue draft, status tracking.
+- **Developer Inbox** (`/inbox`) — **Open** and **Resolved** sidebar cards, stable request numbers (`#1`, `#2`, …), preview spec, optional screenshot, **Copy for Cursor**, GitHub issue draft, status tracking.
+- **Screenshot attachment** (optional on clarify step) — PNG/JPEG/WebP/GIF saved with the spec and previewed in the inbox.
 
 ## Who it's for
 
@@ -45,7 +46,7 @@ npm start
 
 ## Verify the core loop
 
-1. Open `/request`, complete all three steps and clarify questions.
+1. Open `/request`, complete all three steps, clarify questions, and optionally attach a screenshot.
 2. Confirm a new file under `.spec-workflow/specs/requests/`.
 3. Open `/inbox` — the request appears in the list.
 4. Open the spec file — confirm **PRD (minified)**, **ADR**, and **Cursor prompt (minified)** sections exist; raw intake is preserved below.
@@ -73,7 +74,10 @@ Upstream spec handoff: stakeholder intake → markdown brief on disk → Develop
 | `server.js` | Express server, API, static routes |
 | `lib/normalize-request.js` | Messy text → minified PRD + ADR + Cursor prompt (rules; optional LLM) |
 | `lib/spec-writer.js` | Assembles full markdown spec from normalized output |
-| `lib/requests-store.js` | Read/write/list specs under `.spec-workflow/specs/requests/` |
+| `lib/requests-store.js` | Read/write/list specs; stable `requestNumber`; attachments |
+| `lib/attachments.js` | Screenshot storage under `requests/attachments/` |
+| `lib/parse-create-payload.js` | JSON + multipart body parsing for `POST /api/requests` |
+| `lib/upload-middleware.js` | Multer middleware for optional screenshot upload |
 | `lib/frontmatter.js` | YAML frontmatter parse/serialize |
 | `public/request/` | Stakeholder 3-step form |
 | `public/inbox/` | Developer Inbox UI |
@@ -88,9 +92,10 @@ Upstream spec handoff: stakeholder intake → markdown brief on disk → Develop
 | Method | Path | Body / notes |
 |--------|------|----------------|
 | `GET` | `/api/config` | `{ llmAvailable, model, provider }` — drives AI toggle on `/request` |
-| `POST` | `/api/requests` | `{ wish, requesterLabel, audience, frequency, success, clarify?, clarifyNotes?, useLlm? }` |
-| `GET` | `/api/requests` | List metadata for inbox |
-| `GET` | `/api/requests/:id` | Full spec + `cursorCopy` + `issueDraft` |
+| `POST` | `/api/requests` | JSON **or** `multipart/form-data` (optional `screenshot` file + same fields) |
+| `GET` | `/api/requests` | List metadata (`requestNumber`, `summary`, `status`, …) for inbox |
+| `GET` | `/api/requests/:id` | Full spec + `cursorCopy` + `issueDraft` + `requestNumber` + `attachmentUrl` |
+| `GET` | `/api/requests/:id/attachment` | Screenshot bytes (when uploaded) |
 | `PATCH` | `/api/requests/:id` | `{ status }` — `new` \| `in-cursor` \| `done` |
 
 ### Spec file schema
@@ -103,7 +108,7 @@ id: <uuid>
 status: new | in-cursor | done
 requesterLabel: <name + role, required>
 createdAt: <ISO-8601>
-normalized: rules | llm+rules
+normalized: rules | llm+rules | rules (llm-unavailable)
 ---
 ```
 
@@ -111,6 +116,7 @@ normalized: rules | llm+rules
 ## Cursor prompt (minified)
 ## PRD (minified)
 ## ADR
+## Attachment (screenshot)   # when a file was uploaded
 ### Context
 ### Decision
 ### In scope
@@ -158,4 +164,4 @@ core_loop: request-form -> spec-md -> inbox -> copy-for-cursor
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Apache License 2.0 — see [LICENSE](LICENSE).
