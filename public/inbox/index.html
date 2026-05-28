@@ -33,18 +33,26 @@
 
       <main class="inbox-layout">
         <aside class="inbox-sidebar">
-          <div class="card">
-            <h2 id="request-list-heading">Requests</h2>
-            <ul class="request-list" id="request-list"></ul>
-            <p class="empty-state hidden" id="empty-list">
+          <div class="card inbox-card-open">
+            <h2 id="request-list-heading">Open</h2>
+            <ul class="request-list" id="request-list-open"></ul>
+            <p class="empty-state hidden" id="empty-open">
               No requests yet. Share <a href="/request">/request</a>.
             </p>
+            <p class="empty-state empty-state--compact hidden" id="empty-open-caught-up">
+              No open requests — everything is in Resolved below.
+            </p>
+          </div>
+          <div class="card inbox-card-resolved hidden" id="resolved-card">
+            <h2 id="resolved-list-heading">Resolved</h2>
+            <ul class="request-list request-list--resolved" id="request-list-resolved"></ul>
           </div>
         </aside>
 
         <section class="inbox-detail card" id="detail-panel">
           <p class="empty-state" id="empty-detail">Select a request to view the spec.</p>
           <div id="detail-content" class="hidden">
+            <p class="detail-status-banner hidden" id="detail-status-banner" role="status"></p>
             <h2 class="detail-title" id="detail-title"></h2>
             <p class="detail-meta" id="detail-meta"></p>
             <div id="attachment-preview" class="attachment-preview hidden" aria-label="Request screenshot"></div>

@@ -2,9 +2,13 @@ let requests = [];
 let selectedId = null;
 let currentDetail = null;
 
-const listEl = document.getElementById("request-list");
+const openListEl = document.getElementById("request-list-open");
+const resolvedListEl = document.getElementById("request-list-resolved");
 const listHeading = document.getElementById("request-list-heading");
-const emptyList = document.getElementById("empty-list");
+const resolvedHeading = document.getElementById("resolved-list-heading");
+const resolvedCard = document.getElementById("resolved-card");
+const emptyOpen = document.getElementById("empty-open");
+const emptyOpenCaughtUp = document.getElementById("empty-open-caught-up");
 const emptyDetail = document.getElementById("empty-detail");
 const detailContent = document.getElementById("detail-content");
 
@@ -58,6 +62,13 @@ function applyRequestNumbers(items) {
   }));
 }
 
+function partitionRequests(items) {
+  const byNewest = (a, b) => (b.createdAt || "").localeCompare(a.createdAt || "");
+  const open = items.filter((item) => item.status !== "done").sort(byNewest);
+  const resolved = items.filter((item) => item.status === "done").sort(byNewest);
+  return { open, resolved };
+}
+
 function buildListItemMarkup(item) {
   const summary = item.summary || "(no summary)";
   const truncated =
@@ -78,22 +89,13 @@ function buildListItemMarkup(item) {
   `;
 }
 
-async function loadList() {
-  const res = await fetch("/api/requests");
-  requests = applyRequestNumbers(await res.json());
+function renderRequestList(listEl, items) {
   listEl.innerHTML = "";
-  emptyList.classList.toggle("hidden", requests.length > 0);
-
-  if (listHeading) {
-    listHeading.textContent =
-      requests.length > 0 ? `Requests (${requests.length})` : "Requests";
-  }
-
-  for (const item of requests) {
+  for (const item of items) {
     const li = document.createElement("li");
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "request-item";
+    btn.className = `request-item request-item--${item.status || "new"}`;
     btn.dataset.id = item.id;
     if (item.id === selectedId) btn.classList.add("selected");
     btn.setAttribute(
@@ -105,6 +107,36 @@ async function loadList() {
     li.appendChild(btn);
     listEl.appendChild(li);
   }
+}
+
+async function loadList() {
+  const res = await fetch("/api/requests");
+  requests = applyRequestNumbers(await res.json());
+  const { open, resolved } = partitionRequests(requests);
+
+  renderRequestList(openListEl, open);
+  renderRequestList(resolvedListEl, resolved);
+
+  const total = requests.length;
+  const hasOpen = open.length > 0;
+  const hasResolved = resolved.length > 0;
+
+  if (listHeading) {
+    listHeading.textContent = hasOpen ? `Open (${open.length})` : "Open";
+  }
+  if (resolvedHeading) {
+    resolvedHeading.textContent = hasResolved
+      ? `Resolved (${resolved.length})`
+      : "Resolved";
+  }
+
+  resolvedCard?.classList.toggle("hidden", !hasResolved);
+
+  emptyOpen?.classList.toggle("hidden", total > 0);
+  emptyOpenCaughtUp?.classList.toggle(
+    "hidden",
+    !hasResolved || hasOpen || total === 0,
+  );
 
   if (selectedId && !requests.some((r) => r.id === selectedId)) {
     selectedId = null;
@@ -120,6 +152,12 @@ function escapeHtml(str) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function syncListSelection() {
+  document.querySelectorAll(".request-list .request-item").forEach((btn) => {
+    btn.classList.toggle("selected", btn.dataset.id === selectedId);
+  });
 }
 
 async function selectRequest(id) {
@@ -145,6 +183,24 @@ async function selectRequest(id) {
 
   document.getElementById("detail-title").textContent = `${numberLabel} — ${titleText}`;
 
+  const statusBanner = document.getElementById("detail-status-banner");
+  if (statusBanner) {
+    statusBanner.className = "detail-status-banner";
+    if (currentDetail.status === "done") {
+      statusBanner.textContent =
+        "Resolved — marked done. Still readable here; change status below to reopen.";
+      statusBanner.classList.add("detail-status-banner--done");
+      statusBanner.classList.remove("hidden");
+    } else if (currentDetail.status === "in-cursor") {
+      statusBanner.textContent = "In Cursor — actively being implemented.";
+      statusBanner.classList.add("detail-status-banner--in-cursor");
+      statusBanner.classList.remove("hidden");
+    } else {
+      statusBanner.classList.add("hidden");
+      statusBanner.textContent = "";
+    }
+  }
+
   const when = currentDetail.createdAt
     ? new Date(currentDetail.createdAt).toLocaleString()
     : "";
@@ -168,9 +224,7 @@ async function selectRequest(id) {
     attEl.classList.add("hidden");
   }
 
-  document.querySelectorAll(".request-list .request-item").forEach((b) => {
-    b.classList.toggle("selected", b.dataset.id === id);
-  });
+  syncListSelection();
 }
 
 function showToast(msg) {
