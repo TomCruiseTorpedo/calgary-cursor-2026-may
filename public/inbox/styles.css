@@ -4,7 +4,7 @@
 
 .inbox-layout {
   display: grid;
-  grid-template-columns: minmax(260px, 300px) 1fr;
+  grid-template-columns: minmax(280px, 340px) 1fr;
   gap: var(--space-lg);
   align-items: start;
 }
@@ -35,14 +35,21 @@
   padding: 0;
   max-height: min(70vh, 520px);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
 .request-list li {
-  margin-bottom: var(--space-xs);
+  margin: 0;
 }
 
-.request-list button {
+.request-list .request-item {
   width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--space-sm);
   text-align: left;
   background: var(--clay-canvas);
   color: var(--clay-ink);
@@ -53,14 +60,21 @@
   border-radius: var(--radius-lg);
   min-height: auto;
   box-shadow: none;
+  transform: none;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.request-list button:hover {
+.request-list .request-item:hover {
   background: var(--clay-surface-card);
   border-color: var(--clay-muted-soft);
+  transform: none;
 }
 
-.request-list button.selected {
+.request-list .request-item.selected {
   border-color: var(--clay-brand-teal);
   background: linear-gradient(
     135deg,
@@ -70,15 +84,57 @@
   box-shadow: 0 8px 20px rgb(26 58 58 / 10%);
 }
 
-.status-chip {
-  display: inline-block;
-  font-size: 11px;
+.request-list .request-item:active {
+  transform: scale(0.99);
+}
+
+.request-item-number {
+  flex-shrink: 0;
+  min-width: 1.75rem;
+  padding-top: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+  color: var(--clay-muted);
+}
+
+.request-list .request-item.selected .request-item-number {
+  color: var(--clay-brand-teal);
+}
+
+.request-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.request-item-summary {
+  display: block;
+  font-size: 14px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  margin-top: var(--space-xs);
+  line-height: 1.4;
+  color: var(--clay-ink);
+  word-break: break-word;
+}
+
+.request-item-meta {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--clay-muted);
+}
+
+.request-list .status-chip {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin: 0;
+  font-size: 10px;
+  padding: 4px 9px;
+  white-space: nowrap;
 }
 
 .status-new {

@@ -3,9 +3,23 @@ import request from "supertest";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { app } from "../server.js";
-import { getRequestsDir } from "../lib/requests-store.js";
+import {
+  assignRequestNumbers,
+  getRequestsDir,
+} from "../lib/requests-store.js";
 
 const TEST_DIR = path.join(process.cwd(), ".spec-workflow", "specs", "requests");
+
+describe("assignRequestNumbers", () => {
+  it("numbers oldest request as #1", () => {
+    const items = assignRequestNumbers([
+      { id: "newer", createdAt: "2026-05-02T12:00:00.000Z" },
+      { id: "older", createdAt: "2026-05-01T12:00:00.000Z" },
+    ]);
+    expect(items.find((i) => i.id === "older").requestNumber).toBe(1);
+    expect(items.find((i) => i.id === "newer").requestNumber).toBe(2);
+  });
+});
 
 describe("API /api/config", () => {
   it("returns openrouter config shape", async () => {
@@ -79,6 +93,7 @@ describe("API /api/requests", () => {
     const found = res.body.find((r) => r.id === createdId);
     expect(found).toBeTruthy();
     expect(found.summary).toContain("Password reset");
+    expect(found.requestNumber).toBeGreaterThan(0);
   });
 
   it("GET by id returns cursor copy", async () => {
@@ -87,6 +102,7 @@ describe("API /api/requests", () => {
     expect(res.body.cursorCopy).toContain("PRD:");
     expect(res.body.cursorCopy).toContain(createdId);
     expect(res.body.issueDraft).toContain("Success");
+    expect(res.body.requestNumber).toBeGreaterThan(0);
   });
 
   it("PATCH updates status", async () => {
