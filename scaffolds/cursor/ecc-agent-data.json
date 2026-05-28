@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json.schemastore.org/json",
+  "description": "ECC agent data root template for Calgary Cursor 2026 May. Copy to .cursor/ecc-agent-data.json after ECC install.",
+  "agentDataHome": "~/.cursor/ecc-calgary-2026-may"
+}

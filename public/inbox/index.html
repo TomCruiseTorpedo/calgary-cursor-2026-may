@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Developer inbox — Plain Jane's Task Ask</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="/inbox/styles.css" />
+  </head>
+  <body class="inbox-page">
+    <header class="site-header">
+      <a class="brand" href="/request">Plain Jane's <span>Task Ask</span></a>
+      <nav>
+        <a href="/request">New request</a>
+        <a href="/inbox" class="nav-active">Developer inbox</a>
+      </nav>
+    </header>
+
+    <div class="page-wrap page-wrap--wide">
+      <header class="hero">
+        <span class="hero-eyebrow">Builder workspace</span>
+        <h1>Developer inbox</h1>
+        <p class="hero-lead">
+          Pick up stakeholder requests, copy specs into Cursor, and track progress.
+        </p>
+      </header>
+
+      <main class="inbox-layout">
+        <aside class="inbox-sidebar">
+          <div class="card">
+            <h2>Requests</h2>
+            <ul class="request-list" id="request-list"></ul>
+            <p class="empty-state hidden" id="empty-list">
+              No requests yet. Share <a href="/request">/request</a>.
+            </p>
+          </div>
+        </aside>
+
+        <section class="inbox-detail card" id="detail-panel">
+          <p class="empty-state" id="empty-detail">Select a request to view the spec.</p>
+          <div id="detail-content" class="hidden">
+            <h2 class="detail-title" id="detail-title"></h2>
+            <p class="detail-meta" id="detail-meta"></p>
+            <div class="detail-actions">
+              <button type="button" id="copy-cursor">Copy for Cursor</button>
+              <button type="button" class="btn-secondary" id="copy-issue">
+                Copy GitHub issue draft
+              </button>
+              <label for="status-select">Status</label>
+              <select id="status-select">
+                <option value="new">New</option>
+                <option value="in-cursor">In Cursor</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+            <p class="hidden copy-toast" id="copy-toast"></p>
+            <pre class="spec-preview" id="spec-preview"></pre>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="/inbox/app.js" type="module"></script>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "plain-janes-task-ask",
+  "version": "0.1.0",
+  "description": "Plain English in. Builder-ready spec out.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "NODE_ENV=test vitest run"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "supertest": "^7.0.0",
+    "vitest": "^3.0.5"
+  }
+}

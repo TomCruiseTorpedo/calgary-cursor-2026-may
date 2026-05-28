@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>New request — Plain Jane's Task Ask</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/shared/styles.css" />
+  </head>
+  <body class="request-page">
+    <header class="site-header">
+      <a class="brand" href="/request">Plain Jane's <span>Task Ask</span></a>
+      <nav>
+        <a href="/request" class="nav-active">New request</a>
+        <a href="/inbox">Developer inbox</a>
+      </nav>
+    </header>
+
+    <div class="page-wrap">
+      <header class="hero">
+        <span class="hero-eyebrow">Stakeholder intake</span>
+        <h1>Plain English in. Builder-ready spec out.</h1>
+        <p class="hero-lead">
+          Describe what you need in everyday language — we'll shape it into a brief your developer can use in Cursor.
+        </p>
+      </header>
+
+      <main>
+        <div class="card" id="step-panel" data-step-accent="1">
+          <div class="progress" id="progress" aria-hidden="true">
+            <span class="active"></span><span></span><span></span><span></span>
+          </div>
+
+          <section id="step-1">
+            <h1>What should be easier?</h1>
+            <p class="subtitle">Describe the change in plain English — no technical jargon needed.</p>
+            <label for="wish">Your request</label>
+            <textarea
+              id="wish"
+              placeholder="Example: Sales needs to export dashboard data to CSV before quarter-end."
+            ></textarea>
+            <label for="requesterLabel">Your name (optional)</label>
+            <input type="text" id="requesterLabel" placeholder="Alex, PM" />
+            <div class="button-row">
+              <button type="button" id="next-1">Continue</button>
+            </div>
+          </section>
+
+          <section id="step-2" class="hidden">
+            <h1>Who is it for &amp; when?</h1>
+            <p class="subtitle">Help the developer understand context.</p>
+            <label for="audience">Who will use this?</label>
+            <select id="audience">
+              <option value="">Choose one…</option>
+              <option value="Internal team (e.g. sales, support)">
+                Internal team (e.g. sales, support)
+              </option>
+              <option value="Customers / end users">Customers / end users</option>
+              <option value="Admins or operators">Admins or operators</option>
+              <option value="Partners or integrations">Partners or integrations</option>
+            </select>
+            <label for="frequency">How often is this needed?</label>
+            <select id="frequency">
+              <option value="">Choose one…</option>
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly or quarterly">Monthly or quarterly</option>
+              <option value="One-time / launch">One-time / launch</option>
+            </select>
+            <div class="button-row">
+              <button type="button" class="btn-secondary" id="back-2">Back</button>
+              <button type="button" id="next-2">Continue</button>
+            </div>
+          </section>
+
+          <section id="step-3" class="hidden">
+            <h1>How will you know it's working?</h1>
+            <p class="subtitle">One sentence the developer can test against.</p>
+            <label for="success">Success looks like…</label>
+            <textarea
+              id="success"
+              placeholder="Example: A sales rep can download a CSV of the current dashboard filters in under a minute."
+            ></textarea>
+            <div class="button-row">
+              <button type="button" class="btn-secondary" id="back-3">Back</button>
+              <button type="button" id="next-3">Almost done</button>
+            </div>
+          </section>
+
+          <section id="step-clarify" class="hidden">
+            <h1>A few quick checks</h1>
+            <p class="subtitle">Select anything that applies (optional).</p>
+            <div class="check-group" id="clarify-options">
+              <label
+                ><input type="checkbox" value="Must work on mobile" /> Must work on
+                mobile</label
+              >
+              <label
+                ><input type="checkbox" value="Needs login / permissions" /> Needs login /
+                permissions</label
+              >
+              <label
+                ><input type="checkbox" value="Touches customer data" /> Touches customer
+                data</label
+              >
+              <label><input type="checkbox" value="Has a deadline" /> Has a deadline</label>
+              <label
+                ><input type="checkbox" value="Replaces something manual today" /> Replaces
+                something manual today</label
+              >
+            </div>
+            <label for="clarifyNotes">Anything else? (optional)</label>
+            <textarea id="clarifyNotes" rows="3"></textarea>
+            <div class="button-row">
+              <button type="button" class="btn-secondary" id="back-clarify">Back</button>
+              <button type="button" id="submit-request">Submit request</button>
+            </div>
+            <p class="error hidden" id="submit-error"></p>
+          </section>
+
+          <section id="step-thanks" class="hidden">
+            <h1>Thank you!</h1>
+            <p class="subtitle">
+              Here's what we heard — your developer will turn this into a build plan.
+            </p>
+            <div class="recap" id="recap"></div>
+            <div class="button-row">
+              <a class="btn" href="/request">Submit another</a>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <script src="/request/app.js" type="module"></script>
+  </body>
+</html>
