@@ -16,17 +16,20 @@
     <header class="site-header">
       <a class="brand" href="/request">Plain Jane's <span>Task Ask</span></a>
       <nav>
-        <a href="/request" class="nav-active">New request</a>
-        <a href="/inbox">Developer inbox</a>
+        <a href="/request" class="nav-active">New Request</a>
+        <a href="/inbox">Developer Inbox</a>
       </nav>
     </header>
 
     <div class="page-wrap">
       <header class="hero">
         <span class="hero-eyebrow">Stakeholder intake</span>
-        <h1>Plain English in. Builder-ready spec out.</h1>
+          <h1 class="hero-tagline">
+            <span class="hero-tagline-line">Plain English in.</span>
+            <span class="hero-tagline-line">Builder-ready spec out.</span>
+          </h1>
         <p class="hero-lead">
-          Describe what you need in everyday language — we'll shape it into a brief your developer can use in Cursor.
+          Messy spelling and vague wording are fine — we normalize your ask into a minified, AI-native brief (PRD → ADR) your developer can paste into Cursor.
         </p>
       </header>
 
@@ -39,13 +42,19 @@
           <section id="step-1">
             <h1>What should be easier?</h1>
             <p class="subtitle">Describe the change in plain English — no technical jargon needed.</p>
-            <label for="wish">Your request</label>
+            <label for="wish">Your request:</label>
             <textarea
               id="wish"
+              required
               placeholder="Example: Sales needs to export dashboard data to CSV before quarter-end."
             ></textarea>
-            <label for="requesterLabel">Your name (optional)</label>
-            <input type="text" id="requesterLabel" placeholder="Alex, PM" />
+            <label for="requesterLabel">Your name + role:</label>
+            <input
+              type="text"
+              id="requesterLabel"
+              required
+              placeholder="Alex, PM"
+            />
             <div class="button-row">
               <button type="button" id="next-1">Continue</button>
             </div>
@@ -116,6 +125,65 @@
             </div>
             <label for="clarifyNotes">Anything else? (optional)</label>
             <textarea id="clarifyNotes" rows="3"></textarea>
+
+            <span class="file-upload-heading" id="screenshot-label">Screenshot (optional)</span>
+            <p class="field-hint">
+              Attach a mockup, error screen, or sketch — saved with the spec for your developer.
+            </p>
+            <div class="file-upload">
+              <input
+                type="file"
+                id="screenshot"
+                name="screenshot"
+                class="file-upload-input"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                aria-labelledby="screenshot-label screenshot-filename"
+              />
+              <div class="file-upload-row">
+                <label for="screenshot" class="file-upload-trigger btn-secondary">
+                  <svg
+                    class="file-upload-icon"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  Choose image
+                </label>
+                <span class="file-upload-name" id="screenshot-filename">No image selected</span>
+                <button
+                  type="button"
+                  class="file-upload-clear hidden"
+                  id="screenshot-clear"
+                  aria-label="Remove selected image"
+                >
+                  Remove
+                </button>
+              </div>
+              <div id="screenshot-preview" class="screenshot-preview hidden" aria-live="polite"></div>
+            </div>
+
+            <div class="llm-toggle card-inner" id="llm-toggle-wrap" data-llm-toggle>
+              <label class="llm-toggle-label" for="use-llm">
+                <input type="checkbox" id="use-llm" />
+                <span class="llm-toggle-text">
+                  <strong>Polish with AI</strong>
+                  <span class="llm-toggle-hint" id="llm-toggle-hint"
+                    >Uses OpenRouter free model routing to tighten PRD → ADR wording.</span
+                  >
+                </span>
+              </label>
+            </div>
+
             <div class="button-row">
               <button type="button" class="btn-secondary" id="back-clarify">Back</button>
               <button type="button" id="submit-request">Submit request</button>

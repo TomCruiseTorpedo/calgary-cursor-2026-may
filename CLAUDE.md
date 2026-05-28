@@ -19,7 +19,7 @@ Instructions for Claude and other coding agents working in this repository.
 
 ## Core loop (must keep working)
 
-Stakeholder form at `/request` → `POST /api/requests` → file `.spec-workflow/specs/requests/<id>.md` → listed in `/inbox` → **Copy for Cursor**.
+Messy stakeholder text at `/request` → `lib/normalize-request.js` (PRD + ADR + minified prompt) → `POST /api/requests` writes `.spec-workflow/specs/requests/<id>.md` → `/inbox` → **Copy for Cursor** copies the minified prompt block, not raw intake.
 
 ## Commands
 

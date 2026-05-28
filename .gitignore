@@ -19,3 +19,8 @@ docs/private/
 
 # ECC transient hook state (if any path leaks outside .cursor)
 **/.cursor/hooks/state/
+
+# Runtime intake artifacts (specs + screenshots from local demos)
+.spec-workflow/specs/requests/*.md
+.spec-workflow/specs/requests/attachments/*
+!.spec-workflow/specs/requests/attachments/.gitkeep

@@ -11,7 +11,7 @@
 - **Colors:** soft neutral background, accent for primary button (teal or slate-blue)
 - **Accessibility:** labels on every control, focus rings, sufficient contrast
 
-### Developer inbox (`/inbox`)
+### Developer Inbox (`/inbox`)
 
 - **Audience:** builder
 - **Tone:** utilitarian, information-dense

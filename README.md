@@ -1,14 +1,19 @@
 # Plain Jane's Task Ask
 
-*Plain English in. Builder-ready spec out.*
+*Plain English in.*
+
+*Builder-ready spec out.*
 
 This repo hosts **Plain Jane's Task Ask** for the Calgary Cursor May 2026 buildathon (`calgary-cursor-2026-may`).
 
 ## What it does
 
-- **Shareable request form** — PMs, clients, and founders describe what they need in plain English (no GitHub account).
-- **Structured spec on disk** — each request becomes `.spec-workflow/specs/requests/<id>.md` with headings agents can follow.
-- **Developer inbox** — list requests, preview markdown, **Copy for Cursor**, optional GitHub issue draft, track status.
+Stakeholders type **messy human input** — spelling mistakes, vague phrasing, wrong or informal terminology. The app **normalizes** that into an **AI-native, minified spec**: a scoped **PRD** (what / who / success) and **ADR** (decisions, in/out of scope, open questions), plus a **Cursor prompt** block ready to paste.
+
+- **Shareable request form** (`/request`) — plain English only; no GitHub account.
+- **Normalization pipeline** (`lib/normalize-request.js`) — typo cleanup, goal minification, vagueness and terminology flags; optional **Polish with AI** toggle on `/request` uses OpenRouter **`openrouter/free`** via `lib/openrouter-client.js`.
+- **Spec on disk** — `.spec-workflow/specs/requests/<id>.md` with stable PRD → ADR headings and verbatim raw intake preserved for audit.
+- **Developer Inbox** (`/inbox`) — list requests, preview spec, **Copy for Cursor** (minified prompt first), GitHub issue draft, status tracking.
 
 ## Who it's for
 
@@ -21,11 +26,11 @@ This is a **software delivery** workflow tool, not a consumer life app.
 
 ## Problem (personal)
 
-As a developer, I lose time turning vague asks from PMs, clients, and founders into something Cursor can implement. The pain is **before code**: unclear scope, missing success criteria, and context stuck in chat or email.
+As a developer, I lose time turning vague, messy asks from PMs, clients, and founders into something Cursor can implement. The pain is **before code**: typos and fuzzy language hide real scope, success criteria are missing, and context is stuck in chat or email instead of a **minified PRD → ADR** an agent can execute.
 
 ## Fit with the event prompt
 
-The meetup asked for a project that solves an **everyday pain point** with AI-native tooling. Plain Jane's Task Ask targets **upstream spec handoff** — stakeholders write plain English; the repo stores a builder-ready markdown brief and a dev inbox so Cursor can implement without making non-developers learn GitHub.
+The meetup asked for a project that solves an **everyday pain point** with **AI-native** tooling. Plain Jane's Task Ask converts everyday messy language into a **spec-shaped, agent-ready brief** (PRD + ADR + minified Cursor prompt) so builders can implement in Cursor without making stakeholders learn GitHub.
 
 ## Quick start
 
@@ -36,15 +41,18 @@ npm start
 ```
 
 - Stakeholder intake: http://localhost:3000/request  
-- Developer inbox: http://localhost:3000/inbox  
+- Developer Inbox: http://localhost:3000/inbox  
 
 ## Verify the core loop
 
 1. Open `/request`, complete all three steps and clarify questions.
 2. Confirm a new file under `.spec-workflow/specs/requests/`.
 3. Open `/inbox` — the request appears in the list.
-4. Click **Copy for Cursor** — clipboard contains the spec path and body.
-5. Mark status **In Cursor** then **Done**.
+4. Open the spec file — confirm **PRD (minified)**, **ADR**, and **Cursor prompt (minified)** sections exist; raw intake is preserved below.
+5. Click **Copy for Cursor** — clipboard contains the minified PRD/ADR prompt (not just raw stakeholder text).
+6. Mark status **In Cursor** then **Done**.
+
+Try messy input on purpose, e.g. `sales need to exprot dashbord to csv asap` — the saved spec should show cleaned wording and scoped open questions.
 
 ## Demo URL
 
@@ -56,18 +64,19 @@ npm start
 
 ### Purpose
 
-Upstream spec handoff: stakeholder intake → markdown brief on disk → developer inbox → Cursor implementation.
+Upstream spec handoff: stakeholder intake → markdown brief on disk → Developer Inbox → Cursor implementation.
 
 ### File map
 
 | Path | Role |
 |------|------|
 | `server.js` | Express server, API, static routes |
-| `lib/spec-writer.js` | Builds request markdown from form JSON |
+| `lib/normalize-request.js` | Messy text → minified PRD + ADR + Cursor prompt (rules; optional LLM) |
+| `lib/spec-writer.js` | Assembles full markdown spec from normalized output |
 | `lib/requests-store.js` | Read/write/list specs under `.spec-workflow/specs/requests/` |
 | `lib/frontmatter.js` | YAML frontmatter parse/serialize |
 | `public/request/` | Stakeholder 3-step form |
-| `public/inbox/` | Developer inbox UI |
+| `public/inbox/` | Developer Inbox UI |
 | `public/shared/` | Clay design tokens + shared CSS |
 | `.spec-workflow/specs/pain-point.md` | Product problem statement |
 | `.spec-workflow/specs/ui-and-design.md` | UI surfaces and copy rules |
@@ -78,7 +87,8 @@ Upstream spec handoff: stakeholder intake → markdown brief on disk → develop
 
 | Method | Path | Body / notes |
 |--------|------|----------------|
-| `POST` | `/api/requests` | `{ wish, audience, frequency, success, requesterLabel?, clarify?, clarifyNotes? }` |
+| `GET` | `/api/config` | `{ llmAvailable, model, provider }` — drives AI toggle on `/request` |
+| `POST` | `/api/requests` | `{ wish, requesterLabel, audience, frequency, success, clarify?, clarifyNotes?, useLlm? }` |
 | `GET` | `/api/requests` | List metadata for inbox |
 | `GET` | `/api/requests/:id` | Full spec + `cursorCopy` + `issueDraft` |
 | `PATCH` | `/api/requests/:id` | `{ status }` — `new` \| `in-cursor` \| `done` |
@@ -91,19 +101,26 @@ Each request is one markdown file. **Preserve these headings** when editing:
 ---
 id: <uuid>
 status: new | in-cursor | done
-requesterLabel: <optional>
+requesterLabel: <name + role, required>
 createdAt: <ISO-8601>
+normalized: rules | llm+rules
 ---
 ```
 
 ```markdown
-## Summary
-## Context
-## Success criteria
-## Out of scope
-## Raw answers
+## Cursor prompt (minified)
+## PRD (minified)
+## ADR
+### Context
+### Decision
+### In scope
+### Out of scope
+### Open questions
+## Raw intake (verbatim)
 ## GitHub issue draft
 ```
+
+Implement from **Cursor prompt** + **PRD** + **ADR**; use **Raw intake** only when something ambiguous needs the original wording.
 
 ### Suggested agent prompt
 
@@ -128,7 +145,7 @@ Local ECC is gitignored. Reinstall from [docs/ECC-SETUP.md](docs/ECC-SETUP.md). 
 
 ## Environment variables
 
-See [`.env.example`](.env.example). No secrets required for the core loop.
+See [`.env.example`](.env.example). **No secrets required** for the core loop (rules-only). Set `OPENROUTER_API_KEY` to enable the **Polish with AI** toggle (`OPENROUTER_MODEL=openrouter/free` by default).
 
 ## Repository metadata
 

@@ -58,7 +58,9 @@ async function selectRequest(id) {
   emptyDetail.classList.add("hidden");
   detailContent.classList.remove("hidden");
 
+  const goalRow = currentDetail.body.match(/\*\*Goal\*\* \| (.+)/);
   document.getElementById("detail-title").textContent =
+    goalRow?.[1]?.trim() ||
     currentDetail.body.match(/## Summary\s*\n+([\s\S]*?)(?=\n## )/)?.[1]?.trim().split("\n")[0] ||
     "Request";
 
@@ -75,6 +77,15 @@ async function selectRequest(id) {
 
   document.getElementById("status-select").value = currentDetail.status;
   document.getElementById("spec-preview").textContent = currentDetail.content;
+
+  const attEl = document.getElementById("attachment-preview");
+  if (currentDetail.attachmentUrl) {
+    attEl.innerHTML = `<img src="${escapeHtml(currentDetail.attachmentUrl)}" alt="Stakeholder screenshot" />`;
+    attEl.classList.remove("hidden");
+  } else {
+    attEl.innerHTML = "";
+    attEl.classList.add("hidden");
+  }
 
   document.querySelectorAll(".request-list button").forEach((b) => {
     b.classList.toggle("selected", b.dataset.id === id);

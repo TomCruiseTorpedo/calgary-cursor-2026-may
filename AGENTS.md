@@ -6,7 +6,7 @@ Agent-oriented source of truth for this repo. Human readers: see [README.md](REA
 
 | Question | Answer |
 |----------|--------|
-| What is it? | Upstream spec handoff: plain-English stakeholder form → markdown spec → dev inbox with Copy for Cursor |
+| What is it? | Normalizes messy stakeholder text into minified PRD + ADR + Cursor prompt, saved as markdown, surfaced in dev inbox |
 | Who benefits? | PMs/clients/founders (request) and developers using Cursor (inbox) |
 | Core loop | `/request` → `POST /api/requests` → `.spec-workflow/specs/requests/<id>.md` → `/inbox` |
 | Tests | `npm test` (Vitest: spec writer + API) |
@@ -39,10 +39,12 @@ Follow [`DESIGN.md`](DESIGN.md) (Clay via `npx getdesign@latest add clay`) for c
 |------|------|
 | `DESIGN.md` | Clay design tokens and component rules |
 | `server.js` | Express app, API, static files |
-| `lib/spec-writer.js` | Build markdown + frontmatter from intake |
+| `lib/normalize-request.js` | Rules (+ optional LLM when `useLlm`) → PRD, ADR, minified Cursor prompt |
+| `lib/openrouter-client.js` | OpenRouter chat API (`openrouter/free` default) |
+| `lib/spec-writer.js` | Assemble full markdown spec from normalized output |
 | `lib/requests-store.js` | Read/write request specs on disk |
 | `public/request/` | Stakeholder intake UI |
-| `public/inbox/` | Developer inbox UI |
+| `public/inbox/` | Developer Inbox UI |
 | `.spec-workflow/specs/requests/` | Generated specs (committed when demoing) |
 | `scaffolds/cursor/` | ECC reinstall templates (not `.cursor/` itself) |
 | `docs/ECC-SETUP.md` | Local ECC install steps |
@@ -51,7 +53,8 @@ Follow [`DESIGN.md`](DESIGN.md) (Clay via `npx getdesign@latest add clay`) for c
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| POST | `/api/requests` | Create request → write spec file |
+| GET | `/api/config` | OpenRouter availability for UI toggle |
+| POST | `/api/requests` | Create request (`useLlm` optional) → write spec file |
 | GET | `/api/requests` | List all requests (metadata) |
 | GET | `/api/requests/:id` | Full spec body + parsed frontmatter |
 | PATCH | `/api/requests/:id` | Update `status` only |
@@ -63,17 +66,16 @@ YAML frontmatter (required):
 ```yaml
 id: <uuid>
 status: new | in-cursor | done
-requesterLabel: string | optional
+requesterLabel: string (name + role, required)
 createdAt: ISO-8601
 ```
 
 Markdown headings (preserve when editing):
 
-- `## Summary`
-- `## Context`
-- `## Success criteria`
-- `## Out of scope`
-- `## Raw answers`
+- `## Cursor prompt (minified)` — primary paste target for agents
+- `## PRD (minified)` — goal, user, frequency, success, constraints (table)
+- `## ADR` — Context, Decision, In scope, Out of scope, Open questions
+- `## Raw intake (verbatim)` — original stakeholder text (audit only)
 - `## GitHub issue draft`
 
 ## Builder workflow

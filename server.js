@@ -10,6 +10,10 @@ import {
   issueDraftFromBody,
   ensureRequestsDir,
 } from "./lib/requests-store.js";
+import { getOpenRouterConfig } from "./lib/openrouter-client.js";
+import { parseCreatePayload } from "./lib/parse-create-payload.js";
+import { optionalScreenshotUpload } from "./lib/upload-middleware.js";
+import { readAttachmentFile } from "./lib/attachments.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
@@ -25,30 +29,46 @@ app.use("/request", express.static(path.join(__dirname, "public", "request")));
 app.use("/inbox", express.static(path.join(__dirname, "public", "inbox")));
 app.use("/shared", express.static(path.join(__dirname, "public", "shared")));
 
-app.post("/api/requests", async (req, res) => {
-  const { wish, audience, frequency, success, requesterLabel, clarify, clarifyNotes } =
-    req.body || {};
+app.get("/api/config", (_req, res) => {
+  res.json(getOpenRouterConfig());
+});
 
-  if (!wish?.trim() || !audience?.trim() || !frequency?.trim() || !success?.trim()) {
+app.post("/api/requests", optionalScreenshotUpload, async (req, res) => {
+  const payload = parseCreatePayload(req);
+
+  if (
+    !payload.wish ||
+    !payload.requesterLabel ||
+    !payload.audience ||
+    !payload.frequency ||
+    !payload.success
+  ) {
     return res.status(400).json({
-      error: "wish, audience, frequency, and success are required",
+      error:
+        "wish, requesterLabel, audience, frequency, and success are required",
     });
   }
 
   try {
     const created = await createRequest({
-      wish: wish.trim(),
-      audience: audience.trim(),
-      frequency: frequency.trim(),
-      success: success.trim(),
-      requesterLabel: requesterLabel?.trim(),
-      clarify: Array.isArray(clarify) ? clarify : [],
-      clarifyNotes: clarifyNotes?.trim(),
+      wish: payload.wish,
+      audience: payload.audience,
+      frequency: payload.frequency,
+      success: payload.success,
+      requesterLabel: payload.requesterLabel,
+      clarify: payload.clarify,
+      clarifyNotes: payload.clarifyNotes,
+      useLlm: payload.useLlm,
+      screenshot: payload.screenshot,
     });
     res.status(201).json(created);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to save request" });
+    const message =
+      err.message?.includes("image") || err.message?.includes("5 MB")
+        ? err.message
+        : "Failed to save request";
+    res.status(500).json({ error: message });
   }
 });
 
@@ -59,6 +79,19 @@ app.get("/api/requests", async (_req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to list requests" });
+  }
+});
+
+app.get("/api/requests/:id/attachment", async (req, res) => {
+  try {
+    const file = await readAttachmentFile(req.params.id);
+    if (!file) return res.status(404).json({ error: "Not found" });
+    res.setHeader("Content-Type", file.mimeType);
+    res.setHeader("Cache-Control", "private, max-age=3600");
+    res.send(file.buffer);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load attachment" });
   }
 });
 

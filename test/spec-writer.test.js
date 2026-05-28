@@ -3,8 +3,8 @@ import { buildRequestSpec } from "../lib/spec-writer.js";
 import { parseFrontmatter } from "../lib/frontmatter.js";
 
 describe("buildRequestSpec", () => {
-  it("writes frontmatter and required headings", () => {
-    const md = buildRequestSpec({
+  it("writes PRD, ADR, and minified cursor prompt", async () => {
+    const { markdown } = await buildRequestSpec({
       id: "test-id",
       createdAt: "2026-05-28T12:00:00.000Z",
       requesterLabel: "Alex",
@@ -16,16 +16,17 @@ describe("buildRequestSpec", () => {
       clarifyNotes: "Before Q2 close",
     });
 
-    const { frontmatter, body } = parseFrontmatter(md);
+    const { frontmatter, body } = parseFrontmatter(markdown);
     expect(frontmatter.id).toBe("test-id");
-    expect(frontmatter.status).toBe("new");
-    expect(frontmatter.requesterLabel).toBe("Alex");
+    expect(frontmatter.normalized).toMatch(/rules|llm/);
 
-    expect(body).toContain("## Summary");
-    expect(body).toContain("Export dashboard to CSV");
-    expect(body).toContain("## Success criteria");
+    expect(body).toContain("## Cursor prompt (minified)");
+    expect(body).toContain("## PRD (minified)");
+    expect(body).toContain("## ADR");
+    expect(body).toContain("### Open questions");
+    expect(body).toContain("## Raw intake (verbatim)");
     expect(body).toContain("## GitHub issue draft");
+    expect(body).toContain("**Goal** |");
     expect(body).toContain("Has a deadline");
-    expect(body).toContain("Before Q2 close");
   });
 });
