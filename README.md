@@ -16,7 +16,7 @@ Deployed on Vercel (Express `@vercel/node`, framework preset **Other**). Request
 
 ## How it was built
 
-The **entire** buildathon submission — product scope, UI, Express API, tests, specs, and deploy config — was authored with **[Cursor](https://cursor.com) only**. No Claude Code, Cline, GitHub Copilot, Windsurf, Codex CLI, or other agentic coding harness was used to build this repository.
+The **entire** buildathon submission — product scope, UI, Express API, tests, specs, and deploy config — was authored with **[Cursor](https://cursor.com) only**. No Claude Code, Codex, GitHub Copilot, Cline, Kilo Code, Antigravity, Kiro, or other agentic coding harness was used to build this repository.
 
 ## Summary for reviewers
 
