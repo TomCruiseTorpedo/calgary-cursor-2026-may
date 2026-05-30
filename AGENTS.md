@@ -10,7 +10,7 @@ Agent-oriented source of truth for this repo. Human readers: see [README.md](REA
 | Who benefits? | PMs/clients/founders (request) and developers using Cursor (inbox) |
 | Core loop | `/request` → `POST /api/requests` → `.spec-workflow/specs/requests/<id>.md` → `/inbox` |
 | Tests | `npm test` (Vitest: spec writer + API) |
-| Stack | Node 20, Express, static `public/`, no database in v1 |
+| Stack | Node 24, Express, static `public/`, no database in v1 |
 
 ## Identity
 
@@ -110,7 +110,7 @@ Follow AGENTS.md conventions. Do not commit .cursor/ or secrets.
 ## Conventions
 
 - ES modules (`"type": "module"` in package.json)
-- Node 20+, Express 4, no database in v1
+- Node 24+ (see `.nvmrc`), Express 4, no database in v1
 - Minimal dependencies; Vitest for `lib/` and API tests
 - Do not add competitor names, hackathon strategy, or third-party workflow tool references to public docs
 
@@ -135,3 +135,21 @@ Default URL: http://localhost:3000
 - Committing `.cursor/` ECC install
 - `docs/private/`
 - Phase 4 GitHub Actions / Railway unless explicitly requested
+
+## Learned User Preferences
+
+- Keep competition strategy, judging notes, and peer differentiation in gitignored `docs/private/` only — never in README, AGENTS.md, or other public-tracked docs.
+- Do not name upstream OSS inspiration (e.g. Shipmate) in public repo copy; the product stands on its own for the meetup submission.
+- Do not add public comparison tables or “related projects” sections versus other hackathon entrants.
+- Nav labels use title case: **New Request** and **Developer Inbox** (not lowercase “inbox”).
+- Tagline **Plain English in. Builder-ready spec out.** displays as two lines (one sentence per line) in the UI.
+- Optional OpenRouter LLM polish is a user toggle on `/request`; default normalization stays rules-based when the toggle is off.
+- This repo is a transient buildathon project — skip a full five-file Memory Bank; use ECC session memory (`ECC_AGENT_DATA_HOME`) and this file instead.
+
+## Learned Workspace Facts
+
+- Display name **Plain Jane's Task Ask**; GitHub repo name remains `calgary-cursor-2026-may`.
+- Audience: non-technical stakeholders submit messy intake; developers consume minified PRD + ADR + Cursor prompt from `/inbox`.
+- ECC isolated memory: `~/.cursor/ecc-calgary-2026-may` (see `.cursor/ecc-agent-data.json`).
+- Vercel deploy uses framework preset **Other** with existing `vercel.json` (`@vercel/node` → `server.js`); no Next.js/Vite build step.
+- Request specs under `.spec-workflow/specs/requests/` are ephemeral on Vercel serverless unless durable storage is added later.

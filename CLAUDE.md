@@ -14,7 +14,7 @@ Instructions for Claude and other coding agents working in this repository.
 |-------|--------|
 | Name | Plain Jane's Task Ask |
 | Repo | `calgary-cursor-2026-may` |
-| Stack | Node 20, Express, static HTML/CSS/JS, markdown on disk |
+| Stack | Node 24, Express, static HTML/CSS/JS, markdown on disk |
 | Event | Calgary Cursor meetup, May 2026 |
 
 ## Core loop (must keep working)

@@ -35,6 +35,8 @@ The meetup asked for a project that solves an **everyday pain point** with **AI-
 
 ## Quick start
 
+Requires **Node.js 24+** (see `.nvmrc` — `nvm use` if you use nvm).
+
 ```bash
 npm install
 npm test

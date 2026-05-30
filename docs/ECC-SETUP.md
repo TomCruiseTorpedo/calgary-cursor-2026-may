@@ -4,7 +4,7 @@ Everything Claude Code / ECC installs under `.cursor/` in this repo is **gitigno
 
 ## Prerequisites
 
-- Node.js 20+
+- Node.js 24+ (`.nvmrc`; `package.json` `engines.node`)
 - A local clone of [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) (or your team's ECC source)
 
 ## Install ECC into this project

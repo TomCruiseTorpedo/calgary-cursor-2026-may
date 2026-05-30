@@ -128,9 +128,13 @@ app.patch("/api/requests/:id", async (req, res) => {
   }
 });
 
+export default app;
 export { app };
 
-if (process.env.NODE_ENV !== "test") {
+const isLocalServer =
+  process.env.NODE_ENV !== "test" && !process.env.VERCEL;
+
+if (isLocalServer) {
   await ensureRequestsDir();
   app.listen(PORT, () => {
     console.log(`Plain Jane's Task Ask → http://localhost:${PORT}`);
